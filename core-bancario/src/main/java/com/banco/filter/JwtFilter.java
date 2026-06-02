@@ -25,9 +25,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Solo aplicamos el filtro a las rutas que lo requieran (por ejemplo, /transfer)
+        // Solo aplicamos el filtro a las rutas que lo requieran (por ejemplo, /transfer y /api/accounts/balance)
         String path = request.getRequestURI();
-        if (!path.equals("/transfer")) {
+        if (!path.equals("/transfer") && !path.equals("/api/accounts/balance")) {
             filterChain.doFilter(request, response);
             return;
         }
