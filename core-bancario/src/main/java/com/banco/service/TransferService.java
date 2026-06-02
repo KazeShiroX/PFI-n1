@@ -107,5 +107,14 @@ public class TransferService {
             System.err.println("[TransferService] Error al enviar alerta: " + e.getMessage());
         }
     }
+
+    @Transactional
+    public void updateStatus(java.util.UUID txId, String status) {
+        transactionRepository.findById(txId).ifPresent(tx -> {
+            tx.setStatus(status);
+            transactionRepository.save(tx);
+            System.out.println("[TransferService] Estado de la transacción " + txId + " actualizado a: " + status);
+        });
+    }
 }
 
