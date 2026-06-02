@@ -42,17 +42,20 @@ public class TransferService {
 
     @Transactional
     public Transaction processTransfer(String fromUser, String toUser, BigDecimal amount) {
-        Cuenta sender = cuentaRepository.findById(fromUser).orElse(null);
-        Cuenta receiver = cuentaRepository.findById(toUser).orElse(null);
+        Cuenta sender = cuentaRepository.findById(fromUser)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario origen no existe"));
+        Cuenta receiver = cuentaRepository.findById(toUser)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario destinatario no existe"));
         
-        if (sender != null) {
-            sender.setBalance(sender.getBalance().subtract(amount));
-            cuentaRepository.save(sender);
+        if (sender.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Saldo insuficiente");
         }
-        if (receiver != null) {
-            receiver.setBalance(receiver.getBalance().add(amount));
-            cuentaRepository.save(receiver);
-        }
+
+        sender.setBalance(sender.getBalance().subtract(amount));
+        cuentaRepository.save(sender);
+
+        receiver.setBalance(receiver.getBalance().add(amount));
+        cuentaRepository.save(receiver);
 
         Transaction tx = new Transaction(fromUser, toUser, amount, LocalDateTime.now(), "COMPLETED");
         tx = transactionRepository.save(tx);
