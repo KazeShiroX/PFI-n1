@@ -1,0 +1,50 @@
+# ==========================================
+# Pruebas del Nodo 1 (Servicio Bancario)
+# ==========================================
+# Instala la extensión "REST Client" de VS Code para poder ejecutar
+# este archivo con un solo clic sobre el botón "Send Request".
+
+@host_auth = http://localhost:8000
+@host_core = http://localhost:8080
+
+### 1. Registrar un Usuario Nuevo
+# @name registrar
+POST {{host_auth}}/register
+Content-Type: application/json
+
+{
+    "username": "usuario_banco",
+    "password": "mi_password_segura"
+}
+
+### 2. Iniciar Sesión para Obtener el Token
+# @name login
+POST {{host_auth}}/login
+Content-Type: application/json
+
+{
+    "username": "usuario_banco",
+    "password": "mi_password_segura"
+}
+
+### 3. Realizar una Transferencia (Monto estándar)
+# Copia el valor del token obtenido en el paso 2 y pégalo después de "Bearer"
+POST {{host_core}}/transfer
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3VhcmlvX2JhbmNvIiwiZXhwIjoxNzgwMzcxNDg5fQ.3GYNNdOZIEdFqP3xLwbFt89V6yHjxJ4xB21r3hdJMKo
+Content-Type: application/json
+
+{
+    "toUser": "destinatario_banco",
+    "amount": "15000"
+}
+
+### 4. Realizar una Transferencia de Alto Valor (Dispara Alerta Antifraude)
+# Copia el valor del token obtenido en el paso 2 y pégalo después de "Bearer"
+POST {{host_core}}/transfer
+Authorization: Bearer TU_TOKEN_AQUI
+Content-Type: application/json
+
+{
+    "toUser": "destinatario_banco",
+    "amount": "12500"
+}

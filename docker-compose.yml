@@ -1,0 +1,23 @@
+services:
+  auth:
+    build: ./auth-service
+    ports:
+      - "8000:8000"
+    env_file: .env
+    networks:
+      - banco_network
+
+  core:
+    build: ./core-bancario
+    ports:
+      - "8080:8080"
+    env_file: .env
+    networks:
+      - banco_network
+    depends_on:
+      - auth
+
+networks:
+  banco_network:
+    external: true
+    name: banco_network
