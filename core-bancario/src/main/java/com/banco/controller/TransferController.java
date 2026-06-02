@@ -25,7 +25,6 @@ public class TransferController {
         String toUser  = (String) body.get("toUser");
         BigDecimal amount = new BigDecimal(body.get("amount").toString());
 
-        // El fromUser viene del token JWT seteado por JwtFilter en los atributos de la petición
         String fromUser = (String) request.getAttribute("username");
 
         if (fromUser == null) {

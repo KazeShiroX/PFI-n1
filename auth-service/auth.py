@@ -13,7 +13,6 @@ def get_db_connection():
     db_user = os.getenv("DB_USER", "banco")
     db_pass = os.getenv("DB_PASS", "1234")
     
-    # Parse jdbc:postgresql://host:port/db
     match = re.search(r"jdbc:postgresql://([^:/]+)(?::(\d+))?/([^?]+)", db_url)
     if match:
         host = match.group(1)
@@ -49,7 +48,6 @@ def init_db():
     except Exception as e:
         print(f"DATABASE ERROR - No se pudo inicializar la tabla 'usuarios': {e}")
 
-# Inicializar tabla al cargar el módulo
 init_db()
 
 @router.post("/register")
@@ -58,14 +56,12 @@ def registrar(usuario: Usuario):
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Verificar si ya existe el usuario
         cur.execute("SELECT username FROM usuarios WHERE username = %s;", (usuario.username,))
         if cur.fetchone():
             cur.close()
             conn.close()
             raise HTTPException(status_code=400, detail="El usuario ya existe")
             
-        # Generar hash y guardar
         hashed = bcrypt.hashpw(usuario.password.encode(), bcrypt.gensalt()).decode('utf-8')
         cur.execute("INSERT INTO usuarios (username, password_hash) VALUES (%s, %s);", (usuario.username, hashed))
         conn.commit()
@@ -85,7 +81,6 @@ def login(usuario: Usuario):
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Buscar usuario en BD
         cur.execute("SELECT password_hash FROM usuarios WHERE username = %s;", (usuario.username,))
         row = cur.fetchone()
         cur.close()

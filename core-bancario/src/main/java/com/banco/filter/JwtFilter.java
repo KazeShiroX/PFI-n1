@@ -25,7 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Solo aplicamos el filtro a las rutas que lo requieran (por ejemplo, /transfer y /api/accounts/balance)
         String path = request.getRequestURI();
         if (!path.equals("/transfer") && !path.equals("/api/accounts/balance")) {
             filterChain.doFilter(request, response);
@@ -50,7 +49,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     .parseSignedClaims(token)
                     .getPayload();
 
-            // Guardamos el usuario en los atributos del request para que el Servlet pueda usarlo
             request.setAttribute("username", claims.getSubject());
             filterChain.doFilter(request, response);
         } catch (Exception e) {

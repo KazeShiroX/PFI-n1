@@ -16,7 +16,6 @@ public class CuentaController {
     @Autowired
     private TransferService transferService;
 
-    // Crear cuenta tras registrarse en Auth
     @PostMapping("/initialize")
     public ResponseEntity<?> initialize(@RequestBody Map<String, Object> body) {
         String username = (String) body.get("username");
@@ -26,7 +25,6 @@ public class CuentaController {
         return ResponseEntity.ok(cuenta);
     }
 
-    // Consultar el saldo del usuario autenticado por JWT
     @GetMapping("/balance")
     public ResponseEntity<?> getBalance(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
