@@ -1,8 +1,0 @@
-# IPs de servicios — modificar según la red de OpenStack
-DB_URL=jdbc:postgresql://192.168.1.49:5432/bancodb
-DB_USER=banco
-DB_PASS=1234
-JWT_SECRET=mi_clave_super_secreta_256bits_segura
-# vacío en Nodo 1
-MQTT_URL=
-ALERT_API_URL=http://192.168.1.49:9000/publish

@@ -1,21 +1,48 @@
 services:
+  db-master:
+    image: bitnamilegacy/postgresql:15
+    container_name: db-master
+    environment:
+      - POSTGRESQL_USERNAME=banco
+      - POSTGRESQL_PASSWORD=1234
+      - POSTGRESQL_POSTGRES_PASSWORD=1234
+      - POSTGRESQL_DATABASE=bancodb
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - PEER_IP=172.20.0.30
+    networks:
+      banco_network:
+        ipv4_address: 172.20.0.20
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./recover.sh:/usr/local/bin/recover.sh:ro
+    entrypoint: ["/bin/bash", "/usr/local/bin/recover.sh"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banco -d bancodb"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
   auth:
     build: ./auth-service
-    ports:
-      - "8000:8000"
+    network_mode: "service:db-master"
     env_file: .env
-    networks:
-      - banco_network
+    depends_on:
+      db-master:
+        condition: service_healthy
 
   core:
     build: ./core-bancario
-    ports:
-      - "8080:8080"
+    network_mode: "service:db-master"
     env_file: .env
-    networks:
-      - banco_network
     depends_on:
-      - auth
+      db-master:
+        condition: service_healthy
+      auth:
+        condition: service_started
 
 networks:
   banco_network:
